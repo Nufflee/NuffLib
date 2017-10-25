@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SuperSocket.ClientEngine, Version=0.8.0.13, Culture=neutral, PublicKeyToken=ee9af13f57f00acc">
+      <HintPath>..\SuperSocket.ClientEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="TwitchLib, Version=1.5.6.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\TwitchLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="TwitchLib, Version=1.5.6.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\TwitchLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebSocket4Net, Version=0.15.0.9, Culture=neutral, PublicKeyToken=eb4e154b696bf72a">
+      <HintPath>..\WebSocket4Net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="WebSocket4Net" Version="0.15.0" />
+  </ItemGroup>
+</Project>
