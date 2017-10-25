@@ -1,9 +1,23 @@
-﻿using TwitchLib.Models.Client;
+﻿using NuffLib.Core.Models;
+using TwitchLib.Models.Client;
 
 namespace NuffLib
 {
   public class TwitchCredentials
   {
+    /// <summary>
+    /// User these credentials belong to
+    /// </summary>
+    public TwitchUser User => new TwitchUser(credentials.TwitchUsername);
+
+    /// <summary>
+    /// OAuth token
+    /// </summary>
+    public string OAuthToken => credentials.TwitchOAuth;
+
+    /// <summary>
+    /// Application client id
+    /// </summary>
     public string ClientId { get; }
 
     private readonly ConnectionCredentials credentials;

@@ -10,7 +10,7 @@ namespace NuffLib.Core.Models.Cheers
 
     static TwitchCheerController()
     {
-      Cheermotes cheermotes = TwitchAPI.Bits.v5.GetCheermotesAsync(JoinedTwitchChannel.Current.Id).Result;
+      Cheermotes cheermotes = TwitchAPI.Bits.v5.GetCheermotesAsync(TwitchBot.Instance.JoinedChannel.Id).Result;
 
       foreach (Action action in cheermotes.Actions)
       {

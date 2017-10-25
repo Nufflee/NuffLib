@@ -22,7 +22,7 @@ namespace NuffLib.Core.Models
     /// <summary>
     /// User's level
     /// </summary>
-    public TwitchUserLevel Level => TwitchUserLevelExtensions.GetUserLevel(TwitchAPI.Undocumented.GetChattersAsync(JoinedTwitchChannel.Current.Name).Result.FirstOrDefault(c => c.Username == Username).UserType);
+    public TwitchUserLevel Level => TwitchUserLevelExtensions.GetUserLevel(TwitchAPI.Undocumented.GetChattersAsync(TwitchBot.Instance.JoinedChannel.Name).Result.FirstOrDefault(c => c.Username == Username).UserType);
 
     /// <summary>
     /// User's logo url
@@ -52,7 +52,7 @@ namespace NuffLib.Core.Models
     /// <summary>
     /// User's chat color
     /// </summary>
-    public Color Color => Color.FromName(TwitchAPI.Undocumented.GetChatUser(Id, JoinedTwitchChannel.Current.Id).Result.Color);
+    public Color Color => Color.FromName(TwitchAPI.Undocumented.GetChatUser(Id, TwitchBot.Instance.JoinedChannel.Id).Result.Color);
 
     private readonly User user;
 

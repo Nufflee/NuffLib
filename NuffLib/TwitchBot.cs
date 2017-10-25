@@ -10,9 +10,19 @@ namespace NuffLib
     private TwitchClient client;
 
     /// <summary>
-    /// Twitch channel that bot is currently in
+    /// Channel that bot is currently in
     /// </summary>
     public JoinedTwitchChannel JoinedChannel { get; private set; }
+
+    /// <summary>
+    /// Static instance of the bot thats currently running
+    /// </summary>
+    public static TwitchBot Instance { get; private set; }
+
+    /// <summary>
+    /// Bot's connection credentials
+    /// </summary>
+    public TwitchCredentials Credentials { get; private set; }
 
     /// <summary>
     /// Executes when bot joins a channel
@@ -62,12 +72,12 @@ namespace NuffLib
     /// <summary>
     /// Executes when a message is logged to the console
     /// </summary>
-    public TwitchBotEventHandler<LogEventArgs> OnLog;
+    public event TwitchBotEventHandler<LogEventArgs> OnLog;
 
     /// <summary>
     /// Executes when user is timed out
     /// </summary>
-    public TwitchBotEventHandler<UserTimedOutEventArgs> OnUserTimedOut;
+    public event TwitchBotEventHandler<UserTimedOutEventArgs> OnUserTimedOut;
 
     /// <summary>
     /// Constructs a new instance of TwitchBot.
@@ -78,8 +88,12 @@ namespace NuffLib
     /// <param name="autoReListenOnExceptions">Wether the bot should start back up after an unhandled exception.</param>
     public TwitchBot(TwitchCredentials credentials, string channel, bool log = false, bool autoReListenOnExceptions = true)
     {
+      Credentials = credentials;
+
       client = new TwitchClient(credentials, channel, logging: log, autoReListenOnExceptions: autoReListenOnExceptions);
       TwitchAPI.Settings.ClientId = credentials.ClientId;
+
+      Instance = this;
 
       if (channel != null)
       {
@@ -93,21 +107,21 @@ namespace NuffLib
         JoinedChannel = new JoinedTwitchChannel(e.Channel);
       };
       client.OnMessageReceived += (sender, e) => OnMessageRecieved?.Invoke(this, new MessageRecievedEventArgs(new TwitchChatMessage(e.ChatMessage)));
-      client.OnLeftChannel += (sender, e) =>
-      {
-        OnLeftChannel?.Invoke(this, new LeftChannelEventArgs(new TwitchChannel(e.Channel)));
-        JoinedChannel = null;
-        JoinedChannel.Leave();
-      };
+      client.OnLeftChannel += (sender, e) => OnLeftChannel?.Invoke(this, new LeftChannelEventArgs(new TwitchChannel(e.Channel)));
       //client.OnBeingHosted += (sender, e) => OnBeingHosted?.Invoke(this, new BeingHostedEventArgs(new TwitchChannel(e.Channel), new TwitchChannel(e.HostedByChannel), e.Viewers, e.IsAutoHosted));
       client.OnNewSubscriber += (sender, e) => OnNewSubscriber?.Invoke(this, new NewSubscriberEventArgs(e.Subscriber, e.Channel));
       client.OnReSubscriber += (sender, e) => OnReSubscribe?.Invoke(this, new ReSubscribeEventArgs(e.ReSubscriber));
       client.OnWhisperReceived += (sender, e) => OnWhisperRecieved?.Invoke(this, new WhisperReceivedEventArgs(e.WhisperMessage));
       client.OnUserBanned += (sender, e) => OnUserBanned?.Invoke(this, new UserBannedEventArgs(e.Username, e.Channel, e.BanReason));
-      client.OnLog += (sender, e) => OnLog.Invoke(this, new LogEventArgs(e.Data, e.DateTime));
-      client.OnUserTimedout += (sender, e) => OnUserTimedOut.Invoke(this, new UserTimedOutEventArgs(new TwitchChannel(e.Channel), new TwitchUser(e.Username), e.TimeoutDuration, e.TimeoutReason));
+      client.OnLog += (sender, e) => OnLog?.Invoke(this, new LogEventArgs(e.Data, e.DateTime));
+      client.OnUserTimedout += (sender, e) => OnUserTimedOut?.Invoke(this, new UserTimedOutEventArgs(new TwitchChannel(e.Channel), new TwitchUser(e.Username), e.TimeoutDuration, e.TimeoutReason));
 
       client.Connect();
+    }
+
+    ~TwitchBot()
+    {
+      Instance = null;
     }
 
     /// <summary>
