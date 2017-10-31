@@ -16,10 +16,9 @@ namespace NuffLib.Example
         b.SendMessage("I joined!");
         Console.WriteLine(new TwitchChannel("pikkufighter").ProfileBannerUrl);
       };
-      bot.JoinedChannel.SetTitle("LOL");
-      bot.JoinedChannel.SetCommunities("programming", "chill-streams", "gamedevelopment");
 
       bot.OnLog += (twitchBot, eventArgs) => Console.WriteLine("This is the data \\o/ " + eventArgs.data);
+      bot.OnNewFollower += (twitchBot, eventArgs) => Console.WriteLine($"{eventArgs.follower} just followed at {eventArgs.follower.FollowedAt}!");
 
       Console.ReadLine();
     }

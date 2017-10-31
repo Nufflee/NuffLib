@@ -8,13 +8,13 @@ namespace NuffLib.Core.Events
   {
     public TwitchSubscriber subscriber;
     public string message;
-    public TwitchChannel channel;
+    public JoinedTwitchChannel channel;
 
-    public NewSubscriberEventArgs(Subscriber subscriber, string channel)
+    public NewSubscriberEventArgs(Subscriber subscriber, JoinedTwitchChannel channel)
     {
       this.subscriber = new TwitchSubscriber(subscriber);
       message = subscriber.ResubMessage;
-      this.channel = new TwitchChannel(channel);
+      this.channel = channel;
     }
   }
 }

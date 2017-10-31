@@ -14,6 +14,9 @@
       <HintPath>..\TwitchLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="TwitchLib, Version=1.5.7.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\TwitchLib.dll</HintPath>
+    </Reference>
     <Reference Include="WebSocket4Net, Version=0.15.0.9, Culture=neutral, PublicKeyToken=eb4e154b696bf72a">
       <HintPath>..\WebSocket4Net.dll</HintPath>
     </Reference>

@@ -6,13 +6,13 @@ namespace NuffLib.Core.Events
   public class UserBannedEventArgs : EventArgs
   {
     public TwitchUser user;
-    public TwitchChannel channel;
+    public JoinedTwitchChannel channel;
     public string reason;
 
-    public UserBannedEventArgs(string username, string channel, string reason)
+    public UserBannedEventArgs(string username, JoinedTwitchChannel channel, string reason)
     {
       user = new TwitchUser(username);
-      this.channel = new TwitchChannel(channel);
+      this.channel = channel;
       this.reason = reason;
     }
   }

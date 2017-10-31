@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using TwitchLib;
 using TwitchLib.Models.API.v5.Bits;
 
 namespace NuffLib.Core.Models.Cheers
@@ -10,7 +9,7 @@ namespace NuffLib.Core.Models.Cheers
 
     static TwitchCheerController()
     {
-      Cheermotes cheermotes = TwitchAPI.Bits.v5.GetCheermotesAsync(TwitchBot.Instance.JoinedChannel.Id).Result;
+      Cheermotes cheermotes = TwitchBot.Instance.Api.Bits.v5.GetCheermotesAsync(TwitchBot.Instance.JoinedChannel.Id).Result;
 
       foreach (Action action in cheermotes.Actions)
       {

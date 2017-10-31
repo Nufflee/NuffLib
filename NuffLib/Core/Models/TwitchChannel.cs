@@ -1,5 +1,4 @@
-﻿using TwitchLib;
-using TwitchLib.Models.API.v5.Channels;
+﻿using TwitchLib.Models.API.v5.Channels;
 
 namespace NuffLib.Core.Models
 {
@@ -59,7 +58,7 @@ namespace NuffLib.Core.Models
     public TwitchChannel(string name)
     {
       User = new TwitchUser(name);
-      channel = TwitchAPI.Channels.v5.GetChannelByIDAsync(User.Id).Result;
+      channel = TwitchBot.Instance.Api.Channels.v5.GetChannelByIDAsync(User.Id).Result;
     }
   }
 }

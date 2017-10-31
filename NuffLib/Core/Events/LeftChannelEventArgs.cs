@@ -5,9 +5,9 @@ namespace NuffLib.Core.Events
 {
   public class LeftChannelEventArgs : EventArgs
   {
-    public TwitchChannel channel;
+    public JoinedTwitchChannel channel;
 
-    public LeftChannelEventArgs(TwitchChannel channel)
+    public LeftChannelEventArgs(JoinedTwitchChannel channel)
     {
       this.channel = channel;
     }

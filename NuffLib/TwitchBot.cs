@@ -2,6 +2,8 @@
 using NuffLib.Core.Models;
 using NuffLib.Infrastructure;
 using TwitchLib;
+using TwitchLib.Interfaces;
+using TwitchLib.Services;
 
 namespace NuffLib
 {
@@ -13,6 +15,8 @@ namespace NuffLib
     /// Channel that bot is currently in
     /// </summary>
     public JoinedTwitchChannel JoinedChannel { get; private set; }
+
+    public ITwitchAPI Api { get; }
 
     /// <summary>
     /// Static instance of the bot thats currently running
@@ -64,6 +68,8 @@ namespace NuffLib
     /// </summary>
     public event TwitchBotEventHandler<ReSubscribeEventArgs> OnReSubscribe;
 
+    public event TwitchBotEventHandler<NewFollowerEventArgs> OnNewFollower;
+
     /// <summary>
     /// Executes when user is banned
     /// </summary>
@@ -91,7 +97,8 @@ namespace NuffLib
       Credentials = credentials;
 
       client = new TwitchClient(credentials, channel, logging: log, autoReListenOnExceptions: autoReListenOnExceptions);
-      TwitchAPI.Settings.ClientId = credentials.ClientId;
+      Api = new TwitchAPI(credentials.ClientId, credentials.OAuthToken);
+      Api.Settings.ClientId = credentials.ClientId;
 
       Instance = this;
 
@@ -103,18 +110,20 @@ namespace NuffLib
       GlobalExceptionHandler.OnUnhandledException += (sender, e) => OnUnhandledException?.Invoke(this, e);
       client.OnJoinedChannel += (sender, e) =>
       {
-        OnJoinedChannel?.Invoke(this, new JoinedChannelEventArgs(new TwitchChannel(e.Channel)));
+        OnJoinedChannel?.Invoke(this, new JoinedChannelEventArgs(new JoinedTwitchChannel(e.Channel)));
         JoinedChannel = new JoinedTwitchChannel(e.Channel);
       };
       client.OnMessageReceived += (sender, e) => OnMessageRecieved?.Invoke(this, new MessageRecievedEventArgs(new TwitchChatMessage(e.ChatMessage)));
-      client.OnLeftChannel += (sender, e) => OnLeftChannel?.Invoke(this, new LeftChannelEventArgs(new TwitchChannel(e.Channel)));
+      client.OnLeftChannel += (sender, e) => OnLeftChannel?.Invoke(this, new LeftChannelEventArgs(new JoinedTwitchChannel(e.Channel)));
       //client.OnBeingHosted += (sender, e) => OnBeingHosted?.Invoke(this, new BeingHostedEventArgs(new TwitchChannel(e.Channel), new TwitchChannel(e.HostedByChannel), e.Viewers, e.IsAutoHosted));
-      client.OnNewSubscriber += (sender, e) => OnNewSubscriber?.Invoke(this, new NewSubscriberEventArgs(e.Subscriber, e.Channel));
+      client.OnNewSubscriber += (sender, e) => OnNewSubscriber?.Invoke(this, new NewSubscriberEventArgs(e.Subscriber, new JoinedTwitchChannel(e.Channel)));
       client.OnReSubscriber += (sender, e) => OnReSubscribe?.Invoke(this, new ReSubscribeEventArgs(e.ReSubscriber));
       client.OnWhisperReceived += (sender, e) => OnWhisperRecieved?.Invoke(this, new WhisperReceivedEventArgs(e.WhisperMessage));
-      client.OnUserBanned += (sender, e) => OnUserBanned?.Invoke(this, new UserBannedEventArgs(e.Username, e.Channel, e.BanReason));
+      client.OnUserBanned += (sender, e) => OnUserBanned?.Invoke(this, new UserBannedEventArgs(e.Username, new JoinedTwitchChannel(e.Channel), e.BanReason));
       client.OnLog += (sender, e) => OnLog?.Invoke(this, new LogEventArgs(e.Data, e.DateTime));
-      client.OnUserTimedout += (sender, e) => OnUserTimedOut?.Invoke(this, new UserTimedOutEventArgs(new TwitchChannel(e.Channel), new TwitchUser(e.Username), e.TimeoutDuration, e.TimeoutReason));
+      client.OnUserTimedout += (sender, e) => OnUserTimedOut?.Invoke(this, new UserTimedOutEventArgs(new JoinedTwitchChannel(e.Channel), new TwitchUser(e.Username), e.TimeoutDuration, e.TimeoutReason));
+
+      StartFollowerService();
 
       client.Connect();
     }
@@ -122,6 +131,22 @@ namespace NuffLib
     ~TwitchBot()
     {
       Instance = null;
+    }
+
+    private async void StartFollowerService()
+    {
+      FollowerService followerService = new FollowerService(Api, clientId: Credentials.ClientId);
+
+      followerService.SetChannelByChannelId(JoinedChannel.Id);
+      await followerService.StartService();
+
+      followerService.OnNewFollowersDetected += (sender, args) =>
+      {
+        foreach (IFollow follow in args.NewFollowers)
+        {
+          OnNewFollower.Invoke(this, new NewFollowerEventArgs(JoinedChannel, follow));
+        }
+      };
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ namespace NuffLib.Core.Models
     private readonly SubscriberBase subscriberBase;
 
     internal TwitchSubscriberBase(SubscriberBase subscriberBase)
-      : base(TwitchAPI.Users.v5.GetUserByIDAsync(subscriberBase.Id).Result)
+      : base(TwitchBot.Instance.Api.Users.v5.GetUserByIDAsync(subscriberBase.Id).Result)
     {
       this.subscriberBase = subscriberBase;
     }

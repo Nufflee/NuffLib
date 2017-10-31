@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using NuffLib.Core.Enums;
 using TwitchLib;
+using TwitchLib.Interfaces;
 using TwitchLib.Models.API.v5.Users;
 
 namespace NuffLib.Core.Models
@@ -22,7 +23,7 @@ namespace NuffLib.Core.Models
     /// <summary>
     /// User's level
     /// </summary>
-    public TwitchUserLevel Level => TwitchUserLevelExtensions.GetUserLevel(TwitchAPI.Undocumented.GetChattersAsync(TwitchBot.Instance.JoinedChannel.Name).Result.FirstOrDefault(c => c.Username == Username).UserType);
+    public TwitchUserLevel Level => TwitchUserLevelExtensions.GetUserLevel(TwitchBot.Instance.Api.Undocumented.GetChattersAsync(TwitchBot.Instance.JoinedChannel.Name).Result.FirstOrDefault(c => c.Username == Username).UserType);
 
     /// <summary>
     /// User's logo url
@@ -52,9 +53,9 @@ namespace NuffLib.Core.Models
     /// <summary>
     /// User's chat color
     /// </summary>
-    public Color Color => Color.FromName(TwitchAPI.Undocumented.GetChatUser(Id, TwitchBot.Instance.JoinedChannel.Id).Result.Color);
+    public Color Color => Color.FromName(TwitchBot.Instance.Api.Undocumented.GetChatUser(Id, TwitchBot.Instance.JoinedChannel.Id).Result.Color);
 
-    private readonly User user;
+    private readonly IUser user;
 
     /// <summary>
     /// Creates new instance of TwitchUser
@@ -62,10 +63,10 @@ namespace NuffLib.Core.Models
     /// <param name="username">User's username</param>
     public TwitchUser(string username)
     {
-      user = TwitchAPI.Users.v5.GetUserByNameAsync(username).Result.Matches[0];
+      user = TwitchBot.Instance.Api.Users.v5.GetUserByNameAsync(username).Result.Matches[0];
     }
 
-    internal TwitchUser(User user)
+    internal TwitchUser(IUser user)
     {
       this.user = user;
     }
@@ -77,7 +78,7 @@ namespace NuffLib.Core.Models
     /// <returns></returns>
     public static TwitchUser GetById(string id)
     {
-      return new TwitchUser(TwitchAPI.Users.v5.GetUserByIDAsync(id).Result);
+      return new TwitchUser(TwitchBot.Instance.Api.Users.v5.GetUserByIDAsync(id).Result);
     }
 
     public override string ToString()

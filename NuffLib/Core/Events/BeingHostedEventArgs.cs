@@ -5,12 +5,12 @@ namespace NuffLib.Core.Events
 {
   public class BeingHostedEventArgs : EventArgs
   {
-    public TwitchChannel channel;
+    public JoinedTwitchChannel channel;
     public TwitchChannel hostedByChannel;
     public int viewers;
     public bool isAutoHost;
 
-    public BeingHostedEventArgs(TwitchChannel channel, TwitchChannel hostedByChannel, int viewers, bool isAutoHost)
+    public BeingHostedEventArgs(JoinedTwitchChannel channel, TwitchChannel hostedByChannel, int viewers, bool isAutoHost)
     {
       this.channel = channel;
       this.hostedByChannel = hostedByChannel;
